@@ -1,0 +1,5 @@
+vk_user_token = ''
+bot_token = ''
+db_owner = ''
+db_password = ''
+db_name = ''
