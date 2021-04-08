@@ -1,5 +1,10 @@
-sqlalchemy
-vk-api
-requests
-re
-psycopg2
+certifi==2020.12.5
+chardet==4.0.0
+greenlet==1.0.0
+idna==2.10
+psycopg2==2.8.6
+requests==2.25.1
+six==1.15.0
+SQLAlchemy==1.4.5
+urllib3==1.26.4
+vk-api==11.9.1

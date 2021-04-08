@@ -1,7 +1,5 @@
 import requests
-import vk_api
 import config
-from pprint import pprint
 import re
 
 
@@ -44,15 +42,29 @@ class VkUser:
             'fields': ['bdate, sex, city, relation']
         }
         response_info_user_vk = requests.get(user_url, params={**self.params, **user_params})
-        # pprint(response_info_user_vk.json())
         return response_info_user_vk.json()
+
+    def get_user_city(self):
+        """Получаем о id города юзера"""
+        user_city_url = self.url + 'users.get'
+        user_city_params = {
+            'user_ids': self.owner_id,
+            'fields': ['city']
+        }
+        response_user_city_vk = requests.get(user_city_url, params={**self.params, **user_city_params})
+        all_info = response_user_city_vk.json()
+        user_info = all_info['response'][0]
+        if 'city' in user_info:
+            city_id = all_info['response'][0]['city']['id']
+        else:
+            city_id = False
+        return city_id
 
     def identify_search_parametres(self, info):
         """Возвращает кортеж. 1 элемент - словарь параметров для поиска, 2 элемент - список недостоющих параметров"""
         list_first_iter = []
         list_of_missing_filters = []
         dict_params_for_search = {}
-        # print(info)
         filters = ['bdate', 'city', 'relation']
         # Проверяем есть ли эти поля и добавляем их в список
         for filt, meaning in info['response'][0].items():
@@ -84,40 +96,8 @@ class VkUser:
                     list_of_missing_filters.append(filt)
                 else:
                     dict_params_for_search[filt] = str(meaning)
-        # print(list_first_iter)
-        # print(dict_params_for_search) # Список параметров для поиска
         # Находим полностью отсутствующие поля
         for one_elem in filters:
             if one_elem not in list_first_iter:
-                list_of_missing_filters.append(one_elem) # Список недоставющих элементов
-        # print(list_of_missing_filters)
+                list_of_missing_filters.append(one_elem)  # Список недоставющих элементов
         return dict_params_for_search, list_of_missing_filters
-
-
-if __name__ == '__main__':
-    vk_client_1 = VkUser(config.vk_user_token, '5.130', '79932267')
-    info_about_user = vk_client_1.get_main_info_about_user()
-    print(vk_client_1.identify_search_parametres(info_about_user)[0])
-    print(vk_client_1.identify_search_parametres(info_about_user)[1])
-
-    params_for_search = vk_client_1.identify_search_parametres(info_about_user)[0]
-    missing_params = vk_client_1.identify_search_parametres(info_about_user)[1]
-    # Если список недостающих параметров не пуст, то ..., иначе ...
-    if missing_params:
-        print('aaaa')
-    else:
-        print('bbbb')
-
-
-
-
-# def write_msg(user_id, message):
-#     vk_bot.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': randrange(10 ** 7), })
-
-# vk_session = vk_api.VkApi('phone', 'password')
-# vk_session.auth()
-# vk = vk_session.get_api()
-# def get_photos():
-#     """Работающий метод получения фоток через vk_api"""
-#     pprint(vk_session.method('photos.get', {'owner_id': '79932267', 'album_id': 'profile'}))
-
